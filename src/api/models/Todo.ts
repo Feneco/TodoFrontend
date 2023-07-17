@@ -2,10 +2,8 @@ type Todo = {
     id          : number;
     name        : string;
     description : string;
-    pub_date    : string;
-    to_date     : string;
-    project     : number;
-    blocking    : number;
+    pub_date    : Date;
+    to_date    ?: Date | null;
     done        : boolean;
 }
 
