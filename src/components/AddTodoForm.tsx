@@ -10,7 +10,7 @@ import addTodo, { addTodoInterface } from "../api/endpoints/todo/addTodo";
 
 
 interface PropsAddTodoForm {
-  onAdd?: () => {};
+  onAdd?: () => void;
 }
 
 function AddTodoForm({ onAdd } : PropsAddTodoForm) {
@@ -33,7 +33,7 @@ function AddTodoForm({ onAdd } : PropsAddTodoForm) {
       if (response.ok) {
         reset({
           name: "",
-          description:"",
+          description: "",
           dueDate: undefined
         });
         setRenderFeedback(true);
@@ -59,6 +59,16 @@ function AddTodoForm({ onAdd } : PropsAddTodoForm) {
     );
   };
 
+  const nameSize =  {
+    Min: 1,  
+    Max: 256,
+  }
+
+  const descriptionSize =  {
+    Min: 1,  
+    Max: 500,
+  }
+
   return (
     <Stack sx={{ width: "100%" }} gap={2}>
       <TextField
@@ -67,12 +77,12 @@ function AddTodoForm({ onAdd } : PropsAddTodoForm) {
         {...register("name", {
           required: "You need a name for the Todo",
           minLength: {
-            value: 5,
-            message: "Needs to be at least 5 characters long",
+            value: nameSize.Min,
+            message: `Needs to be at least ${nameSize.Min} characters long`,
           },
           maxLength: {
-            value: 50,
-            message: "Needs to be at most 50 characters",
+            value: nameSize.Max,
+            message: `Needs to be at most ${nameSize.Max} characters`,
           },
         })}
         error={errors.name ? true : false}
@@ -86,17 +96,14 @@ function AddTodoForm({ onAdd } : PropsAddTodoForm) {
         label="Description"
         variant="outlined"
         {...register("description", {
-          required: {
-            value: true,
-            message: "Required",
-          },
+          required: false,
           minLength: {
-            value: 5,
-            message: "Needs to be at least 5 characters long",
+            value: descriptionSize.Min,
+            message: `Needs to be at least ${descriptionSize.Min} characters long`,
           },
           maxLength: {
-            value: 256,
-            message: "Needs to be at most 256 chars",
+            value: descriptionSize.Max,
+            message: `Needs to be at most ${descriptionSize.Max} chars`,
           },
         })}
         error={errors.description ? true : false}

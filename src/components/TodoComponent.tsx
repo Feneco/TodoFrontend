@@ -6,6 +6,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Alert,
   Button,
   Container,
   Divider,
@@ -31,7 +32,10 @@ function TodoComponent() {
       setErrorLoading(false);
       getTodos()
         .then((response) => {
-          setResults(response.filter((e) => {return !e.done} ));
+          setResults(
+            response
+              .filter((e) => {return !e.done} )
+              .reverse());
         })
         .catch((e) => {
           console.log(e);
@@ -43,6 +47,10 @@ function TodoComponent() {
         });
     }
   }, [loadingTodos]);
+
+  const reloadTodos = () => {
+    setLoadingTodos(true)
+  }
 
   return (
     <Container>
@@ -62,7 +70,7 @@ function TodoComponent() {
         </Typography>
 
         <Stack spacing={2}>
-          <Button onClick={() => setLoadingTodos(true)}>Reload todos</Button>
+          <Button onClick={reloadTodos}>Reload todos</Button>
           <Accordion>
             <AccordionSummary
               expandIcon={<ExpandMore />}
@@ -70,14 +78,14 @@ function TodoComponent() {
               <Typography>Add new Todo</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <AddTodoForm/>
+              <AddTodoForm onAdd={reloadTodos}/>
             </AccordionDetails>
           </Accordion>
         </Stack>
 
         <Divider />
 
-        {errorLoading ? "Cant load todos" : null}
+        {errorLoading && <Alert severity="error">"Cant load todos"</Alert> }
         <List>
           {loadingTodos ? (
             <Stack spacing={1}>
@@ -90,8 +98,8 @@ function TodoComponent() {
           ) : (
             results?.map((result, i) => {
               return (
-                <ListItem key={i}>
-                  <TodoListItem todo={result} />
+                <ListItem key={result.id}>
+                  <TodoListItem todo={result} onConfirmDelete={reloadTodos}/>
                 </ListItem>
               );
             })
