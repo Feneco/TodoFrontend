@@ -61,7 +61,7 @@ function TodoComponent() {
           Todos:
         </Typography>
 
-        <Stack spacing={1}>
+        <Stack spacing={2}>
           <Button onClick={() => setLoadingTodos(true)}>Reload todos</Button>
           <Accordion>
             <AccordionSummary
@@ -70,7 +70,7 @@ function TodoComponent() {
               <Typography>Add new Todo</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <AddTodoForm />
+              <AddTodoForm/>
             </AccordionDetails>
           </Accordion>
         </Stack>
@@ -81,8 +81,11 @@ function TodoComponent() {
         <List>
           {loadingTodos ? (
             <Stack spacing={1}>
-              <Skeleton variant="text" sx={{ fontSize: "1rem" }} />
-              <Skeleton variant="rounded" width={210} height={60} />
+              <Typography variant="h1"><Skeleton/></Typography> 
+              <Typography variant="caption"><Skeleton/></Typography>
+              <Typography variant="body1"><Skeleton/></Typography>
+              <Divider/>
+              <Skeleton width={80} height={50}/>
             </Stack>
           ) : (
             results?.map((result, i) => {
