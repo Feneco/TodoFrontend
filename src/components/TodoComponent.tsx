@@ -3,9 +3,6 @@ import getTodos from "../api/endpoints/todo/getTodos";
 import Todo from "../api/models/Todo";
 import TodoListItem from "./TodoListItem";
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Alert,
   Button,
   Container,
@@ -17,7 +14,6 @@ import {
   Typography,
 } from "@mui/material";
 import AddTodoForm from "./AddTodoForm";
-import { ExpandMore } from "@mui/icons-material";
 
 function TodoComponent() {
   const [results, setResults] = useState<Todo[]>();
@@ -48,22 +44,15 @@ function TodoComponent() {
     }
   }, [loadingTodos]);
 
-  const reloadTodos = () => {
-    setLoadingTodos(true)
-  }
+  const reloadTodos = () => { setLoadingTodos(true) }
+
+  const [modalFormOpen, setModalFormOpen] = useState(false);
+  const openAddTodoModal  = () => { setModalFormOpen(true)  }
+  const closeAddTodoModal = () => { setModalFormOpen(false) }
 
   return (
     <Container>
-      <Stack
-        spacing={3}
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          width: 500,
-          padding: "5pt",
-          gap: "10pt",
-        }}
-      >
+      <Stack spacing={3}>
 
         <Typography variant="h2" color="text.primary">
           Todos:
@@ -71,18 +60,9 @@ function TodoComponent() {
 
         <Stack spacing={2}>
           <Button onClick={reloadTodos}>Reload todos</Button>
-          <Accordion>
-            <AccordionSummary
-              expandIcon={<ExpandMore />}
-            >
-              <Typography>Add new Todo</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <AddTodoForm onAdd={reloadTodos}/>
-            </AccordionDetails>
-          </Accordion>
+          <Button onClick={openAddTodoModal}>Add todo</Button>
         </Stack>
-
+        <AddTodoForm open={modalFormOpen} onClose={closeAddTodoModal}/>
         <Divider />
 
         {errorLoading && <Alert severity="error">"Cant load todos"</Alert> }
@@ -96,7 +76,7 @@ function TodoComponent() {
               <Skeleton width={80} height={50}/>
             </Stack>
           ) : (
-            results?.map((result, i) => {
+            results?.map((result) => {
               return (
                 <ListItem key={result.id}>
                   <TodoListItem todo={result} onConfirmDelete={reloadTodos}/>

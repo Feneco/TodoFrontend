@@ -1,17 +1,11 @@
 import BaseApiUrl from "../../../constants/BaseApiUrl";
+import Todo from "../../models/Todo";
 
-export interface addTodoInterface {
-  name: string;
-  description: string;
-  dueDate?: Date;
-}
+export type addTodoInterface = Omit<Todo, "id" | "done" | "pub_date">
 
 async function addTodo(todo: addTodoInterface) {
-  if (todo.dueDate == null) {
-    delete todo.dueDate;
-  }
 
-  let response = await fetch(`${BaseApiUrl}`, {
+  const response = await fetch(`${BaseApiUrl}`, {
     method: "POST",
     headers: {
       Accept: "application/json",
