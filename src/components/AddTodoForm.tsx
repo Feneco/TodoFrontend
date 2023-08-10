@@ -1,24 +1,27 @@
+import { ErrorMessage } from "@hookform/error-message";
+import AddIcon from "@mui/icons-material/Add";
 import {
+  AlertColor,
   Box,
   Button,
+  Collapse,
+  Fab,
   Modal,
   Stack,
   TextField,
   Typography,
-  Fab,
-  Collapse,
 } from "@mui/material";
 import { DesktopDateTimePicker } from "@mui/x-date-pickers";
-import AddIcon from "@mui/icons-material/Add";
-import { useState } from "react";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { ErrorMessage } from "@hookform/error-message";
 import dayjs from "dayjs";
+import React, { useState } from "react";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { addTodoInterface } from "../api/endpoints/todo/addTodo";
 
 interface PropsAddTodoForm {
   open: boolean;
   onClose: () => void;
+  addTodo: (todo: addTodoInterface) => Promise<Response>;
+  openSnackBar: (message: string, severity: AlertColor) => void;
 }
 
 interface IFormInput {
@@ -27,7 +30,7 @@ interface IFormInput {
   to_date: Date | null;
 }
 
-function AddTodoForm({ open, onClose }: PropsAddTodoForm) {
+function AddTodoForm({ open, onClose, addTodo, openSnackBar }: PropsAddTodoForm) {
   const [descCollapseOpen, setDescCollapseOpen] = useState(false);
   const [dateTimeCollapseOpen, setDateTimeCollapseOpen] = useState(false);
 
@@ -46,15 +49,25 @@ function AddTodoForm({ open, onClose }: PropsAddTodoForm) {
     },
   });
 
-  const sendForm: SubmitHandler<IFormInput> = (data) => {
+  const sendForm: SubmitHandler<IFormInput> = async (data) => {
     const dataToSend: addTodoInterface = {
       name: data.name,
       description: data.description ?? undefined,
       to_date: data.to_date ?? undefined,
     };
-    console.log({dataToSend});
-    reset();
-    onClose();
+    try {
+      const response = await addTodo(dataToSend);
+      console.log({ response });
+      if (response.ok) {
+        openSnackBar("Added todo successfully", "success");
+        reset();
+        onClose();
+      }
+    } catch (e: unknown) {
+      if (e.message.includes("NetworkError")) {
+        openSnackBar("Can't connect to server!", "error");
+      }
+    }
   };
 
   const collapseButtonFunc = (
@@ -139,7 +152,7 @@ function AddTodoForm({ open, onClose }: PropsAddTodoForm) {
                 defaultValue={undefined}
                 rules={nameValidationRules}
                 render={({
-                  field: { onChange, onBlur, value, ref,  },
+                  field: { onChange, onBlur, value, ref },
                   fieldState: { invalid },
                 }) => (
                   <TextField

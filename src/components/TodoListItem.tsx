@@ -73,7 +73,7 @@ function TodoListItem({ todo, onConfirmDelete }: Props) {
               handleDialogClose();
               deleteTodo(todo.id).then(() => {
                 onConfirmDelete?.();
-              });
+              }).catch((e) => { throw e})
             }}
           >
             Agree
